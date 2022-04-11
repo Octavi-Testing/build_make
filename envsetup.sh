@@ -46,7 +46,7 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 
 EOF
 
-    __print_awaken_functions_help
+    __print_octavi_functions_help
 
 cat <<EOF
 
@@ -59,7 +59,7 @@ EOF
     local T=$(gettop)
     local A=""
     local i
-    for i in `cat $T/build/envsetup.sh $T/vendor/awaken/build/envsetup.sh | sed -n "/^[[:blank:]]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
+    for i in `cat $T/build/envsetup.sh $T/vendor/octavi/build/envsetup.sh | sed -n "/^[[:blank:]]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
       A="$A $i"
     done
     echo $A
@@ -70,8 +70,8 @@ function build_build_var_cache()
 {
     local T=$(gettop)
     # Grep out the variable names from the script.
-    cached_vars=(`cat $T/build/envsetup.sh $T/vendor/awaken/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`)
-    cached_abs_vars=(`cat $T/build/envsetup.sh $T/vendor/awaken/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_abs_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`)
+    cached_vars=(`cat $T/build/envsetup.sh $T/vendor/octavi/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`)
+    cached_abs_vars=(`cat $T/build/envsetup.sh $T/vendor/octavi/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_abs_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`)
     # Call the build system to dump the "<val>=<value>" pairs as a shell script.
     build_dicts_script=`\builtin cd $T; build/soong/soong_ui.bash --dumpvars-mode \
                         --vars="${cached_vars[*]}" \
@@ -153,12 +153,12 @@ function check_product()
         echo "Couldn't locate the top of the tree.  Try setting TOP." >&2
         return
     fi
-    if (echo -n $1 | grep -q -e "^awaken_") ; then
-        AWAKEN_BUILD=$(echo -n $1 | sed -e 's/^awaken_//g')
+    if (echo -n $1 | grep -q -e "^octavi_") ; then
+        OCTAVI_BUILD=$(echo -n $1 | sed -e 's/^octavi_//g')
     else
-        AWAKEN_BUILD=
+        OCTAVI_BUILD=
     fi
-    export AWAKEN_BUILD
+    export OCTAVI_BUILD
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
@@ -711,16 +711,16 @@ function lunch()
 
     if ! check_product $product
     then
-        # if we can't find a product, try to grab it off the AwakenOS GitHub
+        # if we can't find a product, try to grab it off the OCTAVIOS GitHub
         T=$(gettop)
         cd $T > /dev/null
-        vendor/awaken/build/tools/roomservice.py $product
+        vendor/octavi/build/tools/roomservice.py $product
         cd - > /dev/null
         check_product $product
     else
         T=$(gettop)
         cd $T > /dev/null
-        vendor/awaken/build/tools/roomservice.py $product true
+        vendor/octavi/build/tools/roomservice.py $product true
         cd - > /dev/null
     fi
 
@@ -759,7 +759,7 @@ function lunch()
     destroy_build_var_cache
 
     echo "";
-    cat $(gettop)/build/make/awaken_ascii_logo;
+    cat $(gettop)/build/make/octavi_ascii_logo;
     echo"";
 }
 
@@ -1891,4 +1891,4 @@ addcompletions
 
 export ANDROID_BUILD_TOP=$(gettop)
 
-. $ANDROID_BUILD_TOP/vendor/awaken/build/envsetup.sh
+. $ANDROID_BUILD_TOP/vendor/octavi/build/envsetup.sh
